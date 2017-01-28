@@ -24,11 +24,22 @@ CoreProfiler is released under the [MIT license](https://mit-license.org/).
 Basic usage
 -----------
 
-- For profiling a web applications, you need to add references to both CoreProfiler and CoreProfiler.Web.
+- For profiling a web applications, you need to add references to both CoreProfiler and CoreProfiler.Web packages.
+
+- For profiling a console or web application which call wcf services, please also reference Console.Wcf package.
+
+    To enable wcf profiling in a .net core project, you need to implement the partial method below for each of your wcf client:
+
+    ``` csharp
+    static partial void ConfigureEndpoint(ServiceEndpoint serviceEndpoint, ClientCredentials clientCredentials)
+    {
+        serviceEndpoint.EndpointBehaviors.Add(new WcfProfilingBehavior());
+    }
+    ```
 
 - In the Startup.cs file, you need to add the code below as the first app.UseXXX() pipeline to enable CoreProfiler profiling:
 
-	app.UseCoreProfiler();
+	app.UseCoreProfiler(drillDown:true); //if drillDown=true, try to drill down child requests from external apps when view profiling results
 
 - Add a [coreprofiler.json](https://github.com/teddymacn/CoreProfiler/blob/master/mvc-ef-demo/coreprofiler.json) file to your project and make sure it is in [the include of publishOptions in your project.json](https://github.com/teddymacn/CoreProfiler/blob/master/mvc-ef-demo/project.json#L28).
 
@@ -39,3 +50,10 @@ Basic usage
 You can check the [mvc-ef-demo](https://github.com/teddymacn/CoreProfiler/tree/master/mvc-ef-demo) sample for how to enable profiling in a mvc + entityframeworkcore web application.
 
 You can check the [console-demo](https://github.com/teddymacn/CoreProfiler/blob/master/console-demo) sample for how to use JsonProfilingStorage to persist logs and [how to start/stop profiling in a non-web application](https://github.com/teddymacn/CoreProfiler/blob/master/console-demo/Program.cs).
+
+
+Sample Projects
+---------------
+
+- [cross-app-profiling-demo](https://github.com/teddymacn/cross-app-profiling-demo) - Sample projects to demonstrate cross-application performance profiling with coreprofiler/nanoprofiler.
+
